@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -54,6 +55,12 @@ namespace SampleApp
             //var physicalProvider = new PhysicalFileProvider(Path.GetTempPath());
 
             services.AddSingleton<IFileProvider>(physicalProvider);
+
+            services.Configure<FormOptions>(x =>
+            {
+                x.ValueLengthLimit = int.MaxValue;
+                x.MultipartBodyLengthLimit = long.MaxValue; // In case of multipart
+            });
 
             services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("InMemoryDb"));
         }

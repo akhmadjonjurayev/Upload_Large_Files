@@ -213,6 +213,7 @@ namespace SampleApp.Controllers
         #region snippet_UploadPhysical
         [HttpPost]
         [DisableFormValueModelBinding]
+        [DisableRequestSizeLimit]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UploadPhysical()
         {
@@ -269,9 +270,9 @@ namespace SampleApp.Controllers
                         // For more information, see the topic that accompanies 
                         // this sample.
 
-                        var streamedFileContent = await FileHelpers.ProcessStreamedFile(
-                            section, contentDisposition, ModelState, 
-                            _permittedExtensions, _fileSizeLimit);
+                        //var streamedFileContent = await FileHelpers.ProcessStreamedFile(
+                        //    section, contentDisposition, ModelState, 
+                        //    _permittedExtensions, _fileSizeLimit);
 
                         if (!ModelState.IsValid)
                         {
@@ -281,7 +282,8 @@ namespace SampleApp.Controllers
                         using (var targetStream = System.IO.File.Create(
                             Path.Combine(_targetFilePath, trustedFileNameForFileStorage)))
                         {
-                            await targetStream.WriteAsync(streamedFileContent);
+                            await section.Body.CopyToAsync(targetStream);
+                            //await targetStream.WriteAsync(streamedFileContent);
 
                             _logger.LogInformation(
                                 "Uploaded file '{TrustedFileNameForDisplay}' saved to " +
